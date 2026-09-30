@@ -200,4 +200,6 @@ MarketSpy AI/
 
 ## ⚖️ License & Ownership
 Full source code and commercial rights belong to the client. Built with care for e-commerce entrepreneurs.
+
 # MarketSpy-AI-discord-bot
+Bot by [RelayWorks](https://relayworks.dev/)
