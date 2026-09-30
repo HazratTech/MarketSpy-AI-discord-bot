@@ -1,0 +1,47 @@
+name: Build and Deploy MarketSpy AI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/marketspy-ai:latest
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      - name: Pull and restart container
+        run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/marketspy-ai:latest
+
+          docker stop marketspy-ai || true
+          docker rm marketspy-ai || true
+
+          docker run -d \
+            --name marketspy-ai \
+            --network custom_bridge \
+            --env-file /home/envs/marketspy-ai.env \
+            --restart unless-stopped \
+            ${{ secrets.DOCKERHUB_USERNAME }}/marketspy-ai:latest
+
+          sleep 5
+          docker ps | grep marketspy-ai
