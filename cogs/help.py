@@ -27,7 +27,9 @@ class HelpCog(commands.Cog, name="Help & Info"):
         description="View all available MarketSpy AI seller commands and system status.",
     )
     async def help_command(self, interaction: discord.Interaction):
-        view = ui.LayoutView(timeout=180.0)
+        await interaction.response.defer()
+
+        view = ui.LayoutView(timeout=None)
 
         header_text = (
             "# 🛒 MarketSpy AI • E-Commerce Suite\n"
@@ -68,7 +70,7 @@ class HelpCog(commands.Cog, name="Help & Info"):
         )
 
         view.add_item(container)
-        await interaction.response.send_message(view=view)
+        await interaction.followup.send(view=view)
 
 
 async def setup(bot: commands.Bot):

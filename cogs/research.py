@@ -42,9 +42,9 @@ class ResearchCog(commands.Cog, name="Product Research"):
             app_commands.Choice(name="TikTok Shop", value="TikTok Shop"),
         ],
         ai_provider=[
-            app_commands.Choice(name="Google Gemini (Fast & Strategic)", value="gemini"),
-            app_commands.Choice(name="OpenAI (GPT-4o)", value="openai"),
-            app_commands.Choice(name="Anthropic Claude (High Depth)", value="claude"),
+            app_commands.Choice(name="Google Gemini (Gemini 3.8 Flash - Fast)", value="gemini"),
+            app_commands.Choice(name="OpenAI (GPT-5 Flagship - Deep Reasoning)", value="openai"),
+            app_commands.Choice(name="Anthropic Claude (Claude 3.5 Sonnet)", value="claude"),
         ],
     )
     async def product_research(
@@ -80,6 +80,8 @@ class ResearchCog(commands.Cog, name="Product Research"):
                 marketplace=marketplace.value,
                 provider=provider.provider_name,
                 status="success",
+                query_input=f"Niche/Product: {niche_or_product} | Budget: {budget_range or 'N/A'}",
+                query_result=research_data,
             )
 
             # 5. Send rich response LayoutView

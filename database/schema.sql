@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS queries_log (
     marketplace VARCHAR(50),
     provider VARCHAR(50) NOT NULL,
     status VARCHAR(50) DEFAULT 'success',
+    query_input TEXT,
+    query_result JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

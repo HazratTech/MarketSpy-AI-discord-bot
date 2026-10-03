@@ -42,17 +42,17 @@ class BotConfig:
     )
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip("'\"")
 
-    # OpenAI
+    # OpenAI Flagship
     openai_api_key: Optional[str] = (
         os.getenv("OPENAI_API_KEY").strip("'\"") if os.getenv("OPENAI_API_KEY") else None
     )
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip("'\"")
+    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5").strip("'\"")
 
-    # Claude / Anthropic
+    # Claude / Anthropic Flagship
     anthropic_api_key: Optional[str] = (
         os.getenv("ANTHROPIC_API_KEY").strip("'\"") if os.getenv("ANTHROPIC_API_KEY") else None
     )
-    claude_model: str = os.getenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022").strip("'\"")
+    claude_model: str = os.getenv("CLAUDE_MODEL", "sonnet-5.5").strip("'\"")
 
     # General Defaults
     default_currency: str = os.getenv("DEFAULT_CURRENCY", "USD").strip("'\"")

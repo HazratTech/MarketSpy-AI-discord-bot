@@ -48,12 +48,26 @@ class OpenAIProvider(BaseAIProvider):
             {"role": "system", "content": system_prompt or SYSTEM_PROMPT_BASE},
             {"role": "user", "content": prompt},
         ]
-        response = await self.client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=0.7,
-        )
-        return response.choices[0].message.content or ""
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:
+            err_str = str(e).lower()
+            # If the model does not support 'system' role, fallback to 'developer' role
+            if "system" in err_str and ("developer" in err_str or "unsupported" in err_str):
+                dev_messages = [
+                    {"role": "developer", "content": system_prompt or SYSTEM_PROMPT_BASE},
+                    {"role": "user", "content": prompt},
+                ]
+                response = await self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=dev_messages,
+                )
+                return response.choices[0].message.content or ""
+            raise e
 
     async def optimize_listing(
         self,

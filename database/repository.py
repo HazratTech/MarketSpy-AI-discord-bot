@@ -3,6 +3,7 @@ MarketSpy AI - Database Repository
 Encapsulates all domain-specific PostgreSQL queries for guilds, users, and audit logs.
 """
 
+import json
 import logging
 from typing import Optional, Dict, Any, List
 from database.db import db
@@ -70,6 +71,8 @@ class Repository:
         marketplace: Optional[str],
         provider: str,
         status: str = "success",
+        query_input: Optional[str] = None,
+        query_result: Optional[Any] = None,
     ) -> None:
         """Records command usage and updates user stats."""
         if not db.is_connected:
@@ -93,11 +96,22 @@ class Repository:
             await db.execute(user_upsert, user_id, username)
 
             # 2. Insert query audit record
+            json_result = json.dumps(query_result) if query_result is not None else None
             log_query = """
-            INSERT INTO queries_log (user_id, guild_id, command, marketplace, provider, status)
-            VALUES ($1, $2, $3, $4, $5, $6);
+            INSERT INTO queries_log (user_id, guild_id, command, marketplace, provider, status, query_input, query_result)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
             """
-            await db.execute(log_query, user_id, guild_id, command, marketplace, provider, status)
+            await db.execute(
+                log_query,
+                user_id,
+                guild_id,
+                command,
+                marketplace,
+                provider,
+                status,
+                query_input,
+                json_result,
+            )
         except Exception as e:
             logger.error("Failed to log query for user %s: %s", user_id, e)
 

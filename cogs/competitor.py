@@ -42,9 +42,9 @@ class CompetitorCog(commands.Cog, name="Competitor Audit"):
             app_commands.Choice(name="TikTok Shop", value="TikTok Shop"),
         ],
         ai_provider=[
-            app_commands.Choice(name="Google Gemini (Fast & Sharp)", value="gemini"),
-            app_commands.Choice(name="OpenAI (GPT-4o)", value="openai"),
-            app_commands.Choice(name="Anthropic Claude (Deep Teardown)", value="claude"),
+            app_commands.Choice(name="Google Gemini (Gemini 3.8 Flash - Fast)", value="gemini"),
+            app_commands.Choice(name="OpenAI (GPT-5 Flagship - Deep Reasoning)", value="openai"),
+            app_commands.Choice(name="Anthropic Claude (Claude 3.5 Sonnet)", value="claude"),
         ],
     )
     async def competitor_audit(
@@ -80,6 +80,8 @@ class CompetitorCog(commands.Cog, name="Competitor Audit"):
                 marketplace=marketplace.value,
                 provider=provider.provider_name,
                 status="success",
+                query_input=f"Competitor: {competitor_data} | Details: {details or 'N/A'}",
+                query_result=audit_data,
             )
 
             # 5. Send rich response LayoutView

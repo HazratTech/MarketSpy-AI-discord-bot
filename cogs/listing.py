@@ -42,9 +42,9 @@ class ListingCog(commands.Cog, name="Listing Optimizer"):
             app_commands.Choice(name="TikTok Shop", value="TikTok Shop"),
         ],
         ai_provider=[
-            app_commands.Choice(name="Google Gemini (Fast & Creative)", value="gemini"),
-            app_commands.Choice(name="OpenAI (GPT-4o)", value="openai"),
-            app_commands.Choice(name="Anthropic Claude (High Detail)", value="claude"),
+            app_commands.Choice(name="Google Gemini (Gemini 3.8 Flash - Fast)", value="gemini"),
+            app_commands.Choice(name="OpenAI (GPT-5 Flagship - Deep Reasoning)", value="openai"),
+            app_commands.Choice(name="Anthropic Claude (Claude 3.5 Sonnet)", value="claude"),
         ],
     )
     async def optimize_listing(
@@ -82,6 +82,8 @@ class ListingCog(commands.Cog, name="Listing Optimizer"):
                 marketplace=marketplace.value,
                 provider=provider.provider_name,
                 status="success",
+                query_input=f"Product: {product_name} | Features: {key_features} | Audience: {target_audience or 'General'}",
+                query_result=listing_data,
             )
 
             # 5. Send rich response LayoutView

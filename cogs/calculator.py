@@ -60,19 +60,22 @@ class CalculatorCog(commands.Cog, name="Profit Calculator"):
         ad_spend: float = 0.0,
         fba_tier: Optional[app_commands.Choice[str]] = None,
     ):
+        # 1. Defer interaction immediately to guarantee 3-second Discord acknowledgment
+        await interaction.response.defer()
+
         try:
-            # 1. Validation
+            # 2. Validation
             if selling_price <= 0:
                 error_layout = create_error_layout("Selling price must be greater than $0.00.")
-                await interaction.response.send_message(view=error_layout, ephemeral=True)
+                await interaction.followup.send(view=error_layout, ephemeral=True)
                 return
 
             if cogs < 0 or shipping_cost < 0 or ad_spend < 0:
                 error_layout = create_error_layout("Costs cannot be negative numbers.")
-                await interaction.response.send_message(view=error_layout, ephemeral=True)
+                await interaction.followup.send(view=error_layout, ephemeral=True)
                 return
 
-            # 2. Calculation
+            # 3. Calculation
             tier_val = fba_tier.value if fba_tier else "standard"
             res = ProfitEngine.calculate(
                 marketplace=marketplace.value,
@@ -84,8 +87,14 @@ class CalculatorCog(commands.Cog, name="Profit Calculator"):
                 currency="USD",
             )
 
-            # 3. Log query to PostgreSQL
+            # 4. Log query to PostgreSQL
             guild_id = interaction.guild_id if interaction.guild else None
+            calc_input = (
+                f"Selling: ${selling_price:.2f}, COGS: ${cogs:.2f}, "
+                f"Shipping: ${shipping_cost:.2f}, Ad Spend: ${ad_spend:.2f}"
+            )
+            if fba_tier:
+                calc_input += f", FBA Tier: {tier_val}"
             await Repository.record_query_log(
                 user_id=interaction.user.id,
                 username=interaction.user.name,
@@ -94,16 +103,26 @@ class CalculatorCog(commands.Cog, name="Profit Calculator"):
                 marketplace=marketplace.value,
                 provider="math_engine",
                 status="success",
+                query_input=calc_input,
+                query_result={
+                    "net_profit": res.net_profit,
+                    "net_margin_pct": res.net_margin_pct,
+                    "roi_pct": res.roi_pct,
+                    "total_costs": res.total_costs,
+                },
             )
 
-            # 4. Display result with LayoutView
+            # 5. Display result with LayoutView via followup
             layout_view = create_profit_layout(res)
-            await interaction.response.send_message(view=layout_view)
+            await interaction.followup.send(view=layout_view)
 
         except Exception as e:
             logger.error("Error executing /profit-calculator: %s", e)
             error_layout = create_error_layout(f"Failed to calculate profit: {e}")
-            await interaction.response.send_message(view=error_layout, ephemeral=True)
+            if interaction.response.is_done():
+                await interaction.followup.send(view=error_layout)
+            else:
+                await interaction.response.send_message(view=error_layout, ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
