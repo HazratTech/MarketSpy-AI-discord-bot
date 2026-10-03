@@ -25,31 +25,37 @@ logger = logging.getLogger("MarketSpyAI.Config")
 @dataclass(frozen=True)
 class BotConfig:
     # Discord
-    discord_token: str = os.getenv("DISCORD_BOT_TOKEN", "")
-    bot_prefix: str = os.getenv("BOT_PREFIX", "!")
+    discord_token: str = os.getenv("DISCORD_BOT_TOKEN", "").strip("'\"")
+    bot_prefix: str = os.getenv("BOT_PREFIX", "!").strip("'\"")
 
     # Database
     database_url: str = os.getenv(
         "DATABASE_URL", "postgresql://postgres:password@localhost:5432/marketspy_ai"
-    )
+    ).strip("'\"")
 
     # AI Defaults
-    default_ai_provider: str = os.getenv("DEFAULT_AI_PROVIDER", "gemini").lower()
+    default_ai_provider: str = os.getenv("DEFAULT_AI_PROVIDER", "gemini").strip("'\"").lower()
 
     # Google Gemini
-    gemini_api_key: Optional[str] = os.getenv("GEMINI_API_KEY")
-    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    gemini_api_key: Optional[str] = (
+        os.getenv("GEMINI_API_KEY").strip("'\"") if os.getenv("GEMINI_API_KEY") else None
+    )
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip("'\"")
 
     # OpenAI
-    openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    openai_api_key: Optional[str] = (
+        os.getenv("OPENAI_API_KEY").strip("'\"") if os.getenv("OPENAI_API_KEY") else None
+    )
+    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip("'\"")
 
     # Claude / Anthropic
-    anthropic_api_key: Optional[str] = os.getenv("ANTHROPIC_API_KEY")
-    claude_model: str = os.getenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022")
+    anthropic_api_key: Optional[str] = (
+        os.getenv("ANTHROPIC_API_KEY").strip("'\"") if os.getenv("ANTHROPIC_API_KEY") else None
+    )
+    claude_model: str = os.getenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022").strip("'\"")
 
     # General Defaults
-    default_currency: str = os.getenv("DEFAULT_CURRENCY", "USD")
+    default_currency: str = os.getenv("DEFAULT_CURRENCY", "USD").strip("'\"")
 
     def validate(self) -> None:
         """Validates critical settings and logs warnings for missing optional keys."""
